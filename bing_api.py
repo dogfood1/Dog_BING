@@ -5,7 +5,16 @@ mind_html = ''
 file_name = ''
 
 import requests,re,sys
+import netaddr
+import struct
+import socket
 from sys import argv
+
+
+def ip2int(addr):
+        return struct.unpack("!I", socket.inet_aton(addr))[0]
+def int2ip(addr):
+        return socket.inet_ntoa(struct.pack("!I", addr))
 
 def RegexC(reg,str):
 	p1 = reg
@@ -88,12 +97,24 @@ if __name__ == '__main__':
 	reload(sys)
 	sys.setdefaultencoding('utf-8')
 
+
+
 	if argv[1] != '':
-		file_name = argv[1]
-		for x in xrange(1,256):
-			main(argv[1]+str(x))
-			pass
+		ips = argv[1]
+		if '-' in ips:
+			start, end = ips.split('-')
+			startlong = ip2int(start)
+			endlong = ip2int(end)
+			ips = netaddr.IPRange(start,end)
+			for x in ips:
+				main(x)
+
+
+		# file_name = argv[1]
+		# for x in xrange(1,256):
+		# 	main(argv[1]+str(x))
+		# 	pass
 	else:
-		print 'xx.py 192.168.1.'
+		print 'xx.py 192.168.1.1-192.168.2.1'
 
 
