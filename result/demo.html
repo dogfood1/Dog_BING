@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Bing C段结果</title>
+<link rel="stylesheet" type="text/css" href="js/tree_themes/SimpleTree.css"/>
+<script type="text/javascript" src="./js/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="./js/SimpleTree.js"></script>
+<script type="text/javascript">
+$(function(){
+	$(".st_tree").SimpleTree({
+		click:function(a){
+			if(!$(a).attr("hasChild"))
+				alert($(a).attr("ref"));
+		}
+	});
+});
+</script>
+</head>
+<body>
+
+<div class="st_tree">
+<ul>
+	<li><a href="#" ref="hyjm">Bing C段查询工具</a></li>
+	<li><a href="#" ref="xtgl">By DogFood 2017.12</a></li>
+
+<!-- #####C_INFO##### -->
+</ul>
+</div>
+
+</body>
+</html>
