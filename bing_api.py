@@ -1,10 +1,11 @@
 #coding=utf-8
 
 mind_html = ''
-
+ip_page = 0
 file_name = ''
+site_num = 0
 
-import requests,re,sys
+import requests,re,sys,time
 import netaddr
 import struct
 import socket
@@ -23,11 +24,16 @@ def RegexC(reg,str):
 	return matcher1
 
 def getNextUrl(html):
+	global mind_html,ip_page
 	tmp = RegexC('<a class="sb_pagN"(.*?)</a>',html)
 	if len(tmp)==0:
 		return 'done'
 	for x in tmp:
 		# print x
+		ip_page = ip_page+1
+		if ip_page > 20:
+			return 'done'
+		print ip_page
 		url =  RegexC('href="(.*?)"',x)
 		url = 'https://www.bing.com'+url[0]
 		url = url.replace('amp;','')
@@ -39,7 +45,7 @@ def getNewx():
 
 
 def BingWebSearch(url):
-	global mind_html
+	global mind_html,site_num
 	p1 = '<li class="b_algo"(.*?)</h2>'
 	pattern1 = re.compile(p1)
 	r = requests.get(url)
@@ -49,11 +55,13 @@ def BingWebSearch(url):
 	
 
 	print len(matcher1)
+	site_num = site_num+len(matcher1)
+	# print matcher1
 	for x in matcher1:
 		x = x.replace('><div class="b_title"><h2>','')
 		x = x.replace('><h2>','')
 
-		mind_html+='<li class="">'+x+'</li>'
+		mind_html+='<li class="">'+str(x)+'</li>'
 		print '<li class="">'+x+'</li>'
 		pass
 
@@ -70,8 +78,11 @@ def BingWebSearch(url):
 
 def main(ip):
 
-	global mind_html
-	mind_html += '<li><a href="#" ref="#">'+ip+'</a></li>'
+	global mind_html,ip_page,site_num
+	ip_page = 0
+	site_num = 0
+	# print ip
+	mind_html += '<li><a href="#" ref="#">'+str(ip)+'(#site_num#)</a></li>'
 	mind_html += '<ul>'
 	result = BingWebSearch('https://www.bing.com/search?q=ip%3a'+str(ip))
 	while result != 'done':
@@ -81,13 +92,18 @@ def main(ip):
  	outfile()
 
 def outfile():
-	global file_name
+	print 'now outfile'
+	global file_name,site_num,mind_html
 	file_object = open('./result/demo.html')
 	all_the_text = file_object.read()
 
 	start_html = all_the_text[0:all_the_text.find('<!-- #####C_INFO##### -->')]
 	end_html = all_the_text[all_the_text.find('<!-- #####C_INFO##### -->'):]
 
+	mind_html = mind_html.replace('#site_num#',str(site_num))
+
+	print site_num
+	print file_name
 	file_object = open('./result/'+file_name+'.html', 'w')
 	file_object.write(start_html+mind_html+end_html)
 	file_object.close()
@@ -101,6 +117,7 @@ if __name__ == '__main__':
 
 	if argv[1] != '':
 		ips = argv[1]
+		file_name = argv[1]+str(time.time())
 		if '-' in ips:
 			start, end = ips.split('-')
 			startlong = ip2int(start)
